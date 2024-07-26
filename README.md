@@ -1,4 +1,4 @@
-# `log-execution-time`
+# `log-execution-time-new`
 
 A simple TypeScript decorator for logging the execution time of methods. This package helps in measuring and logging the time taken by methods to execute, useful for performance monitoring and debugging.
 
@@ -7,7 +7,7 @@ A simple TypeScript decorator for logging the execution time of methods. This pa
 To install the package, run:
 
 ```sh
-npm install log-execution-time
+npm install log-execution-time-new
 ```
 
 ## Basic Example
