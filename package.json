@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/rahuljindal1/log-execution-time.git"
   },
   "keywords": [
     "decorator",
