@@ -8,6 +8,7 @@ To install the package, run:
 
 ```sh
 npm install log-execution-time
+```
 
 ### Basic Example
 
