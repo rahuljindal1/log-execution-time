@@ -10,7 +10,7 @@ To install the package, run:
 npm install log-execution-time
 ```
 
-### Basic Example
+## Basic Example
 
 Use the decorator on a synchronous method:
 
@@ -33,7 +33,7 @@ instance.myMethod();
 Expected Output: 2024-07-26T14:28:00.000Z myMethod: 123ms
 ```
 
-Use the decorator on a asynchronous method:
+Use the decorator on an asynchronous method:
 
 ```typescript
 import LogExecutionTime from 'log-execution-time';
@@ -54,7 +54,7 @@ instance.myMethod();
 Expected Output: 2024-07-26T14:29:00.000Z myAsyncMethod: 1000ms
 ```
 
-### Additional Parameter
+## Additional Parameters
 
 1. **Custom Key**: Provide a custom key name to be included in the log output:
 
