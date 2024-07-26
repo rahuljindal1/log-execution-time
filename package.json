@@ -1,5 +1,5 @@
 {
-  "name": "log-execution-time-new",
+  "name": "log-execution-time-n",
   "version": "1.0.0",
   "description": "Easy to use decorator to log the execution time of a function",
   "main": "dist/index.js",
