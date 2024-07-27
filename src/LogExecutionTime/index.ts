@@ -1,6 +1,17 @@
+import { v4 as uuidv4 } from "uuid";
+
 export interface LogExecutionTimeOptions {
   keyName?: string;
   disable?: boolean;
+  showExecutionCount?: boolean;
+}
+
+interface Logger {
+  key: string;
+  label: string;
+  startTimestamp: number;
+  endTimestamp: number;
+  showExecutionCount?: boolean;
 }
 
 /**
@@ -11,10 +22,14 @@ export interface LogExecutionTimeOptions {
  *
  * @disable Conditionally disable logging
  *
+ * @showExecutionCount Add a count for how many times a function being called
+ *
  * @returns A decorator function.
  */
+const propertyExecutionCountMap = new Map<string, number>();
+
 export function LogExecutionTime(options?: LogExecutionTimeOptions) {
-  const { keyName, disable } = options || {};
+  const { keyName, disable, showExecutionCount } = options || {};
 
   return function (
     target: any,
@@ -22,12 +37,18 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
     descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
-    const key = keyName || propertyKey;
+    const key = keyName || propertyKey || uuidv4();
     const label = `${getFormattedDate(new Date())} | ${key}`;
-    const logger = buildTimeSpentLogger(label, disable);
+    const logger = buildLogger({
+      key,
+      label,
+      disable,
+      showExecutionCount,
+    });
 
     if (isAsyncFunction(originalMethod)) {
       descriptor.value = async function (...args: any[]) {
+        setPropertyExecutionCount(propertyExecutionCountMap, key);
         try {
           const startTime = Date.now();
           const result = await originalMethod.apply(this, args);
@@ -41,6 +62,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
       };
     } else {
       descriptor.value = function (...args: any[]) {
+        setPropertyExecutionCount(propertyExecutionCountMap, key);
         try {
           const startTime = Date.now();
           const result = originalMethod.apply(this, args);
@@ -59,7 +81,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
 }
 
 function getFormattedDate(date: Date) {
-  const padTo2Digits = (num: number) => num.toString().padStart(2, "0");
+  const padTo2Digits = (num: number) => String(num).padStart(2, "0");
 
   const day = padTo2Digits(date.getDate());
   const month = padTo2Digits(date.getMonth() + 1); // Months are zero-based
@@ -71,22 +93,61 @@ function getFormattedDate(date: Date) {
   return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
 }
 
-function buildTimeSpentLogger(label: string, disable?: boolean) {
-  return function (startTime: number, endTime: number) {
+function buildLogger({
+  key,
+  label,
+  disable,
+  showExecutionCount,
+}: {
+  key: string;
+  label: string;
+  disable?: boolean;
+  showExecutionCount?: boolean;
+}) {
+  return function (startTimestamp: number, endTimestamp: number) {
     if (disable) {
       return;
     }
-    logTimeSpent.call(null, label, startTime, endTime);
+    const options: Logger = {
+      key,
+      label,
+      startTimestamp,
+      endTimestamp,
+      showExecutionCount,
+    };
+    logger.call(null, options);
   };
 }
 
-function logTimeSpent(
-  label: string,
-  startTimestamp: number,
-  endTimestamp: number
+function setPropertyExecutionCount(
+  propertyExecutionCountMap: Map<string, number>,
+  key: string
 ) {
+  if (propertyExecutionCountMap.has(key)) {
+    const existingCount = propertyExecutionCountMap.get(key) || 0;
+    propertyExecutionCountMap.set(key, existingCount + 1);
+  } else {
+    propertyExecutionCountMap.set(key, 1);
+  }
+}
+
+function logger({
+  key,
+  label,
+  startTimestamp,
+  endTimestamp,
+  showExecutionCount,
+}: Logger) {
+  let executionCount = "";
+  if (showExecutionCount) {
+    const count = propertyExecutionCountMap.get(key) || 0;
+    if (count > 1) {
+      executionCount = `   x${count}`;
+    }
+  }
+
   const spentTime = endTimestamp - startTimestamp;
-  console.log(`${label}: ${timeWithUnits(spentTime)}`);
+  console.log(`${label}: ${timeWithUnits(spentTime)}${executionCount}`);
 }
 
 function timeWithUnits(spentTime: number) {
