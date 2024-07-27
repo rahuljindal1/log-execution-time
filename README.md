@@ -79,11 +79,9 @@ Expected Output: 2024-07-26T14:30:00.000Z CustomKeyMethod: 200ms
 
 ### Available Options
 
-```bash
-1. keyName: Set custom key for the logged entity.
-2. disable: Conditionally disable logging.
-3. showExecutionCount: Add a count for how many times a function being called.
-```
+1. **keyName**: Set custom key for the logged entity.
+2. **disable**: Conditionally disable logging.
+3. **showExecutionCount**: Add a count for how many times a function being called.
 
 
 ## Contributing
