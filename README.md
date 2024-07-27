@@ -56,7 +56,7 @@ Expected Output: 2024-07-26T14:29:00.000Z myAsyncMethod: 1000ms
 
 ## Additional Parameters
 
-1. **Options**: Provide options that that will be used while logging the execution time:
+1. **Options**: Provide options that will be used while logging the execution time:
 
 ```typescript
 import LogExecutionTime from 'log-execution-time';
@@ -76,6 +76,13 @@ instance.myCustomKeyMethod();
 ```typescript
 Expected Output: 2024-07-26T14:30:00.000Z CustomKeyMethod: 200ms
 ```
+
+### Available Options
+
+```bash
+1. keyName: Set custom key for the logged entity
+```
+
 
 ## Contributing
 Feel free to submit issues or pull requests if you have suggestions for improvements or find bugs.
