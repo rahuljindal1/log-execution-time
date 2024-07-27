@@ -1,29 +1,28 @@
-import { ExecutionCountService } from "./ExecutionCount";
+import { MetricService } from "../metric";
+
+const metricService = MetricService.getInstance();
+
 export class LoggerService {
   #key: string;
   #label: string;
   #disable: boolean;
   #showExecutionCount: boolean;
-  #executionCountService: ExecutionCountService;
 
   constructor({
     key,
     label,
     disable = false,
     showExecutionCount = false,
-    executionCountService,
   }: {
     key: string;
     label: string;
     disable?: boolean;
     showExecutionCount?: boolean;
-    executionCountService: ExecutionCountService;
   }) {
     this.#key = key;
     this.#label = label;
     this.#disable = disable;
     this.#showExecutionCount = showExecutionCount;
-    this.#executionCountService = executionCountService;
   }
 
   log(startTimestamp: number, endTimestamp: number, count: number) {
@@ -38,10 +37,16 @@ export class LoggerService {
       }
     }
 
-    const spentTime = endTimestamp - startTimestamp;
-    console.log(
-      `${this.#label}: ${this.timeWithUnits(spentTime)}${executionCount}`
-    );
+    const timeSpent = endTimestamp - startTimestamp;
+    const displayTime = this.timeWithUnits(timeSpent);
+    metricService.addEntity({
+      key: this.#key,
+      label: this.#label,
+      displayTime,
+      timeSpent,
+    });
+
+    console.log(`${this.#label}: ${displayTime}${executionCount}`);
   }
 
   private timeWithUnits(spentTime: number) {

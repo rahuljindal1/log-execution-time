@@ -1,7 +1,7 @@
 import { LoggerService } from "./Logger";
 import { DateUtilityService } from "./DateUtility";
 import { ExecutionCountService } from "./ExecutionCount";
-import { LogExecutionTimeOptions, Logger } from "./interfaces";
+import { LogExecutionTimeOptions } from "./interfaces";
 import { v4 as uuidv4 } from "uuid";
 
 export { LogExecutionTimeOptions } from "./interfaces";
@@ -37,7 +37,6 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
       label,
       disable,
       showExecutionCount,
-      executionCountService,
     });
 
     if (isAsyncFunction(originalMethod)) {
