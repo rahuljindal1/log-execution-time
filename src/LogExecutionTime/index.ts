@@ -1,3 +1,5 @@
+import { LoggerService } from "./Logger";
+import { DateUtilityService } from "./DateUtility";
 import { ExecutionCountService } from "./ExecutionCount";
 import { LogExecutionTimeOptions, Logger } from "./interfaces";
 import { v4 as uuidv4 } from "uuid";
@@ -5,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 export { LogExecutionTimeOptions } from "./interfaces";
 
 const executionCountService = new ExecutionCountService();
+const dateUtilityService = new DateUtilityService();
 
 /**
  * A decorator for logging execution time of methods.
@@ -28,12 +31,13 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
   ) {
     const originalMethod = descriptor.value;
     const key = keyName || propertyKey || uuidv4();
-    const label = `${getFormattedDate(new Date())} | ${key}`;
-    const logger = buildLogger({
+    const label = `${dateUtilityService.labelDate(new Date())} | ${key}`;
+    const loggerService = new LoggerService({
       key,
       label,
       disable,
       showExecutionCount,
+      executionCountService,
     });
 
     if (isAsyncFunction(originalMethod)) {
@@ -43,7 +47,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
           const startTime = Date.now();
           const result = await originalMethod.apply(this, args);
           const endTime = Date.now();
-          logger(startTime, endTime);
+          loggerService.log(startTime, endTime, executionCountService.get(key));
           return result;
         } catch (error) {
           console.timeEnd(label);
@@ -57,7 +61,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
           const startTime = Date.now();
           const result = originalMethod.apply(this, args);
           const endTime = Date.now();
-          logger(startTime, endTime);
+          loggerService.log(startTime, endTime, executionCountService.get(key));
           return result;
         } catch (error) {
           console.timeEnd(label);
@@ -68,81 +72,6 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
 
     return descriptor;
   };
-}
-
-function getFormattedDate(date: Date) {
-  const padTo2Digits = (num: number) => String(num).padStart(2, "0");
-
-  const day = padTo2Digits(date.getDate());
-  const month = padTo2Digits(date.getMonth() + 1); // Months are zero-based
-  const year = date.getFullYear().toString().slice(-2);
-  const hours = padTo2Digits(date.getHours());
-  const minutes = padTo2Digits(date.getMinutes());
-  const seconds = padTo2Digits(date.getSeconds());
-
-  return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
-}
-
-function buildLogger({
-  key,
-  label,
-  disable,
-  showExecutionCount,
-}: {
-  key: string;
-  label: string;
-  disable?: boolean;
-  showExecutionCount?: boolean;
-}) {
-  return function (startTimestamp: number, endTimestamp: number) {
-    if (disable) {
-      return;
-    }
-    const options: Logger = {
-      key,
-      label,
-      startTimestamp,
-      endTimestamp,
-      showExecutionCount,
-    };
-    logger.call(null, options);
-  };
-}
-
-function logger({
-  key,
-  label,
-  startTimestamp,
-  endTimestamp,
-  showExecutionCount,
-}: Logger) {
-  let executionCount = "";
-  if (showExecutionCount) {
-    const count = executionCountService.get(key);
-    if (count > 1) {
-      executionCount = `   x${count}`;
-    }
-  }
-
-  const spentTime = endTimestamp - startTimestamp;
-  console.log(`${label}: ${timeWithUnits(spentTime)}${executionCount}`);
-}
-
-function timeWithUnits(spentTime: number) {
-  const units = [
-    { label: "s", limit: 60 * 1000, factor: 1000 },
-    { label: "mins", limit: 60 * 60 * 1000, factor: 60 * 1000 },
-    { label: "hrs", limit: Infinity, factor: 60 * 60 * 1000 },
-  ];
-
-  for (const unit of units) {
-    if (spentTime < unit.limit) {
-      const time = (spentTime / unit.factor).toPrecision(3);
-      return `${time}${unit.label}`;
-    }
-  }
-
-  return "--";
 }
 
 function isAsyncFunction(fn: Function): boolean {
