@@ -56,13 +56,13 @@ Expected Output: 2024-07-26T14:29:00.000Z myAsyncMethod: 1000ms
 
 ## Additional Parameters
 
-1. **Custom Key**: Provide a custom key name to be included in the log output:
+1. **Options**: Provide options that that will be used while logging the execution time:
 
 ```typescript
 import LogExecutionTime from 'log-execution-time';
 
 class ExampleClass {
-  @LogExecutionTime('CustomKeyMethod')
+  @LogExecutionTime({ keyName: "CustomKeyMethod" })
   myCustomKeyMethod() {
     // Simulate a time-consuming task
     for (let i = 0; i < 1e6; i++) {}
