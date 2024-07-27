@@ -1,18 +1,10 @@
+import { ExecutionCountService } from "./ExecutionCount";
+import { LogExecutionTimeOptions, Logger } from "./interfaces";
 import { v4 as uuidv4 } from "uuid";
 
-export interface LogExecutionTimeOptions {
-  keyName?: string;
-  disable?: boolean;
-  showExecutionCount?: boolean;
-}
+export { LogExecutionTimeOptions } from "./interfaces";
 
-interface Logger {
-  key: string;
-  label: string;
-  startTimestamp: number;
-  endTimestamp: number;
-  showExecutionCount?: boolean;
-}
+const executionCountService = new ExecutionCountService();
 
 /**
  * A decorator for logging execution time of methods.
@@ -26,8 +18,6 @@ interface Logger {
  *
  * @returns A decorator function.
  */
-const propertyExecutionCountMap = new Map<string, number>();
-
 export function LogExecutionTime(options?: LogExecutionTimeOptions) {
   const { keyName, disable, showExecutionCount } = options || {};
 
@@ -48,7 +38,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
 
     if (isAsyncFunction(originalMethod)) {
       descriptor.value = async function (...args: any[]) {
-        setPropertyExecutionCount(propertyExecutionCountMap, key);
+        executionCountService.set(key);
         try {
           const startTime = Date.now();
           const result = await originalMethod.apply(this, args);
@@ -62,7 +52,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
       };
     } else {
       descriptor.value = function (...args: any[]) {
-        setPropertyExecutionCount(propertyExecutionCountMap, key);
+        executionCountService.set(key);
         try {
           const startTime = Date.now();
           const result = originalMethod.apply(this, args);
@@ -119,18 +109,6 @@ function buildLogger({
   };
 }
 
-function setPropertyExecutionCount(
-  propertyExecutionCountMap: Map<string, number>,
-  key: string
-) {
-  if (propertyExecutionCountMap.has(key)) {
-    const existingCount = propertyExecutionCountMap.get(key) || 0;
-    propertyExecutionCountMap.set(key, existingCount + 1);
-  } else {
-    propertyExecutionCountMap.set(key, 1);
-  }
-}
-
 function logger({
   key,
   label,
@@ -140,7 +118,7 @@ function logger({
 }: Logger) {
   let executionCount = "";
   if (showExecutionCount) {
-    const count = propertyExecutionCountMap.get(key) || 0;
+    const count = executionCountService.get(key);
     if (count > 1) {
       executionCount = `   x${count}`;
     }
