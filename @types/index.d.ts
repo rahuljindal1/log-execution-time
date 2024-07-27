@@ -5,12 +5,10 @@ import { LogExecutionTimeOptions } from "..";
 declare module "log-execution-time-new" {
   /**
    * Options for the LogExecutionTime decorator.
-   *
-   * @keyName: Set custom key for the logged entity
-   *
    */
   export interface LogExecutionTimeOptions {
     keyName?: string;
+    disable?: boolean;
   }
 
   /**

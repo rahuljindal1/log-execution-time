@@ -1,9 +1,20 @@
 export interface LogExecutionTimeOptions {
   keyName?: string;
+  disable?: boolean;
 }
 
+/**
+ * A decorator for logging execution time of methods.
+ * @param options Optional options to be used in the log output.
+ *
+ * @keyName Set custom key for the logged entity
+ *
+ * @disable Conditionally disable logging
+ *
+ * @returns A decorator function.
+ */
 export function LogExecutionTime(options?: LogExecutionTimeOptions) {
-  const { keyName } = options || {};
+  const { keyName, disable } = options || {};
 
   return function (
     target: any,
@@ -13,6 +24,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
     const originalMethod = descriptor.value;
     const key = keyName || propertyKey;
     const label = `${getFormattedDate(new Date())} | ${key}`;
+    const logger = buildTimeSpentLogger(label, disable);
 
     if (isAsyncFunction(originalMethod)) {
       descriptor.value = async function (...args: any[]) {
@@ -20,7 +32,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
           const startTime = Date.now();
           const result = await originalMethod.apply(this, args);
           const endTime = Date.now();
-          logTimeSpent(startTime, endTime, label);
+          logger(startTime, endTime);
           return result;
         } catch (error) {
           console.timeEnd(label);
@@ -33,7 +45,7 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
           const startTime = Date.now();
           const result = originalMethod.apply(this, args);
           const endTime = Date.now();
-          logTimeSpent(startTime, endTime, label);
+          logger(startTime, endTime);
           return result;
         } catch (error) {
           console.timeEnd(label);
@@ -59,10 +71,19 @@ function getFormattedDate(date: Date) {
   return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
 }
 
+function buildTimeSpentLogger(label: string, disable?: boolean) {
+  return function (startTime: number, endTime: number) {
+    if (disable) {
+      return;
+    }
+    logTimeSpent.call(null, label, startTime, endTime);
+  };
+}
+
 function logTimeSpent(
+  label: string,
   startTimestamp: number,
-  endTimestamp: number,
-  label: string
+  endTimestamp: number
 ) {
   const spentTime = endTimestamp - startTimestamp;
   console.log(`${label}: ${timeWithUnits(spentTime)}`);
