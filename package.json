@@ -1,10 +1,10 @@
 {
   "name": "log-execution-time-new",
-  "version": "2.3.6",
+  "version": "2.4.6",
   "description": "Easy to use decorator to log the execution time of a function",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && node minify.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
   "license": "ISC",
   "devDependencies": {
     "@types/uuid": "^10.0.0",
+    "terser": "^5.31.3",
     "typescript": "^5.5.4"
   },
   "dependencies": {
