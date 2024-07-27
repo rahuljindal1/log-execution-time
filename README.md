@@ -15,7 +15,7 @@ npm install log-execution-time-new
 Use the decorator on a synchronous method:
 
 ```typescript
-import LogExecutionTime from 'log-execution-time';
+import LogExecutionTime from 'log-execution-time-new';
 
 class ExampleClass {
   @LogExecutionTime()
@@ -36,7 +36,7 @@ Expected Output: 2024-07-26T14:28:00.000Z myMethod: 123ms
 Use the decorator on an asynchronous method:
 
 ```typescript
-import LogExecutionTime from 'log-execution-time';
+import LogExecutionTime from 'log-execution-time-new';
 
 class ExampleClass {
   @LogExecutionTime()
@@ -59,7 +59,7 @@ Expected Output: 2024-07-26T14:29:00.000Z myAsyncMethod: 1000ms
 1. **Options**: Provide options that will be used while logging the execution time:
 
 ```typescript
-import LogExecutionTime from 'log-execution-time';
+import LogExecutionTime from 'log-execution-time-new';
 
 class ExampleClass {
   @LogExecutionTime({ keyName: "CustomKeyMethod" })
