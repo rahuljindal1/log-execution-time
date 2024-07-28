@@ -1,6 +1,6 @@
 {
   "name": "log-execution-time-new",
-  "version": "2.5.6",
+  "version": "2.6.6",
   "description": "Easy to use decorator to log the execution time of a function",
   "main": "dist/index.js",
   "scripts": {

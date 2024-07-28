@@ -11,5 +11,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "typeRoots": ["@types", "node_modules/@types"],
-  "include": ["@types", "index.ts"]
+  "include": ["@types", "index.ts", "index.d.ts"]
 }

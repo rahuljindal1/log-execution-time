@@ -9,18 +9,6 @@ export { LogExecutionTimeOptions } from "./interfaces";
 const executionCountService = new ExecutionCountService();
 const dateUtilityService = new DateUtilityService();
 
-/**
- * A decorator for logging execution time of methods.
- * @param options Optional options to be used in the log output.
- *
- * @keyName Set custom key for the logged entity
- *
- * @disable Conditionally disable logging
- *
- * @showExecutionCount Add a count for how many times a function being called
- *
- * @returns A decorator function.
- */
 export function LogExecutionTime(options?: LogExecutionTimeOptions) {
   const { keyName, disable, showExecutionCount } = options || {};
 
