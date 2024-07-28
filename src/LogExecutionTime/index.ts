@@ -12,14 +12,14 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
   return function (
     target: any,
     propertyKey: string,
-    descriptor: PropertyDescriptor,
+    descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
     const key = keyName || propertyKey || "(undefined key)";
     const loggerService = new LoggerService({
       key,
       disable,
-      showExecutionCount,
+      showExecutionCount
     });
 
     if (isAsyncFunction(originalMethod)) {
@@ -58,6 +58,6 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
   };
 }
 
-function isAsyncFunction(fn: Function): boolean {
+function isAsyncFunction(fn: () => void): boolean {
   return fn.constructor.name === "AsyncFunction";
 }
