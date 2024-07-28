@@ -1,7 +1,6 @@
 import { LoggerService } from "./Logger";
 import { ExecutionCountService } from "./ExecutionCount";
 import { LogExecutionTimeOptions } from "./interfaces";
-import { v4 as uuidv4 } from "uuid";
 
 export { LogExecutionTimeOptions } from "./interfaces";
 
@@ -13,10 +12,10 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
   return function (
     target: any,
     propertyKey: string,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ) {
     const originalMethod = descriptor.value;
-    const key = keyName || propertyKey || uuidv4();
+    const key = keyName || propertyKey || "(undefined key)";
     const loggerService = new LoggerService({
       key,
       disable,
