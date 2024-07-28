@@ -1,26 +1,24 @@
+import { DateUtilityService } from "./DateUtility";
 import { MetricService } from "../metric";
 
 const metricService = MetricService.getInstance();
+const dateUtilityService = new DateUtilityService();
 
 export class LoggerService {
   #key: string;
-  #label: string;
   #disable: boolean;
   #showExecutionCount: boolean;
 
   constructor({
     key,
-    label,
     disable = false,
     showExecutionCount = false,
   }: {
     key: string;
-    label: string;
     disable?: boolean;
     showExecutionCount?: boolean;
   }) {
     this.#key = key;
-    this.#label = label;
     this.#disable = disable;
     this.#showExecutionCount = showExecutionCount;
   }
@@ -39,14 +37,16 @@ export class LoggerService {
 
     const timeSpent = endTimestamp - startTimestamp;
     const displayTime = this.timeWithUnits(timeSpent);
+    const label = `${dateUtilityService.labelDate(new Date())} | ${this.#key}`;
+
     metricService.addEntity({
-      key: this.#key,
-      label: this.#label,
-      displayTime,
+      label,
       timeSpent,
+      displayTime,
+      key: this.#key,
     });
 
-    console.log(`${this.#label}: ${displayTime}${executionCount}`);
+    console.log(`${label}: ${displayTime}${executionCount}`);
   }
 
   private timeWithUnits(spentTime: number) {
