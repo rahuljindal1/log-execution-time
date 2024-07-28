@@ -12,7 +12,7 @@ export class LoggerService {
   constructor({
     key,
     disable = false,
-    showExecutionCount = false,
+    showExecutionCount = false
   }: {
     key: string;
     disable?: boolean;
@@ -43,7 +43,7 @@ export class LoggerService {
       label,
       timeSpent,
       displayTime,
-      key: this.#key,
+      key: this.#key
     });
 
     console.log(`${label}: ${displayTime}${executionCount}`);
@@ -53,7 +53,7 @@ export class LoggerService {
     const units = [
       { label: "s", limit: 60 * 1000, factor: 1000 },
       { label: "mins", limit: 60 * 60 * 1000, factor: 60 * 1000 },
-      { label: "hrs", limit: Infinity, factor: 60 * 60 * 1000 },
+      { label: "hrs", limit: Infinity, factor: 60 * 60 * 1000 }
     ];
 
     for (const unit of units) {
