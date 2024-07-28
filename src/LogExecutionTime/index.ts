@@ -30,28 +30,30 @@ export function LogExecutionTime(options?: LogExecutionTimeOptions) {
     if (isAsyncFunction(originalMethod)) {
       descriptor.value = async function (...args: any[]) {
         executionCountService.set(key);
+        const startTime = Date.now();
         try {
-          const startTime = Date.now();
           const result = await originalMethod.apply(this, args);
           const endTime = Date.now();
           loggerService.log(startTime, endTime, executionCountService.get(key));
           return result;
         } catch (error) {
-          console.timeEnd(label);
+          const endTime = Date.now();
+          loggerService.log(startTime, endTime, executionCountService.get(key));
           throw error;
         }
       };
     } else {
       descriptor.value = function (...args: any[]) {
         executionCountService.set(key);
+        const startTime = Date.now();
         try {
-          const startTime = Date.now();
           const result = originalMethod.apply(this, args);
           const endTime = Date.now();
           loggerService.log(startTime, endTime, executionCountService.get(key));
           return result;
         } catch (error) {
-          console.timeEnd(label);
+          const endTime = Date.now();
+          loggerService.log(startTime, endTime, executionCountService.get(key));
           throw error;
         }
       };
