@@ -88,4 +88,4 @@ Expected Output: 2024-07-26T14:30:00.000Z CustomKeyMethod: 200ms
 Feel free to submit issues or pull requests if you have suggestions for improvements or find bugs.
 
 ## License
-This package is licensed under the MIT License
+This package is licensed under the ISC License
